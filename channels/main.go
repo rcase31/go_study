@@ -71,27 +71,27 @@ func WaitingForAllBuffered() {
 	}
 }
 
+// TODO: create mechanics to ensure that we're done with this channel
 func WaitingForAllBufferedIterateChannel() {
 
 	const NUM_WORKERS = 10
 
 	done := make(chan bool, NUM_WORKERS)
-	actuallyDone := make(chan bool, NUM_WORKERS)
-	for i := 0; i < NUM_WORKERS; i++ {
-		actuallyDone <- true
-	}
+	counter := 0
 
 	for i := 0; i < NUM_WORKERS; i++ {
 		go func() {
 			worker(done)
-			<-actuallyDone
+			//TODO: fix this because it is susceptivle to race conditions
+			counter++
 		}()
 	}
 
-	_, ok := <-actuallyDone
-	if !ok {
-
+	//TODO:
+	for counter < NUM_WORKERS {
+		time.Sleep(time.Second)
 	}
+
 	close(done)
 	for a := range done {
 		fmt.Print(a)
