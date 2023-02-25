@@ -47,11 +47,12 @@ func WaitingForAllUnbuffered() {
 
 	done := make(chan bool)
 
+	// go-calling all workers
 	for i := 0; i < NUM_WORKERS; i++ {
 		go worker(done)
 	}
 	for i := 0; i < NUM_WORKERS; i++ {
-
+		<-done
 	}
 }
 
@@ -67,6 +68,33 @@ func WaitingForAllBuffered() {
 	}
 	for i := 0; i < NUM_WORKERS; i++ {
 		<-done
+	}
+}
+
+func WaitingForAllBufferedIterateChannel() {
+
+	const NUM_WORKERS = 10
+
+	done := make(chan bool, NUM_WORKERS)
+	actuallyDone := make(chan bool, NUM_WORKERS)
+	for i := 0; i < NUM_WORKERS; i++ {
+		actuallyDone <- true
+	}
+
+	for i := 0; i < NUM_WORKERS; i++ {
+		go func() {
+			worker(done)
+			<-actuallyDone
+		}()
+	}
+
+	_, ok := <-actuallyDone
+	if !ok {
+
+	}
+	close(done)
+	for a := range done {
+		fmt.Print(a)
 	}
 }
 
