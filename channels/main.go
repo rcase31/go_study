@@ -2,22 +2,12 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 )
 
-// TODO: use flag package here
-func main() {
-	start := time.Now()
-
-	OKBuffered()
-	elapsed := time.Since(start)
-	log.Printf("took %s", elapsed)
-}
-
 func worker(done chan bool) {
 	fmt.Print("working...")
-	time.Sleep(time.Second)
+	time.Sleep(time.Millisecond)
 	fmt.Println("done")
 	done <- true
 }
@@ -71,26 +61,19 @@ func WaitingForAllBuffered() {
 	}
 }
 
-// TODO: create mechanics to ensure that we're done with this channel
+// It will successfully deplete the channel using a for loop
 func WaitingForAllBufferedIterateChannel() {
 
 	const NUM_WORKERS = 10
 
 	done := make(chan bool, NUM_WORKERS)
-	counter := 0
 
 	for i := 0; i < NUM_WORKERS; i++ {
 		go func() {
 			worker(done)
-			//TODO: fix this because it is susceptivle to race conditions
-			counter++
 		}()
 	}
-
-	//TODO:
-	for counter < NUM_WORKERS {
-		time.Sleep(time.Second)
-	}
+	time.Sleep(time.Second)
 
 	close(done)
 	for a := range done {
@@ -99,7 +82,7 @@ func WaitingForAllBufferedIterateChannel() {
 }
 
 // behavior: execution will not wait each go-routine to finish
-func closingTooEarly() {
+func ClosingTooEarly() {
 	done := make(chan struct{}, 2)
 
 	for i := 0; i < 2; i++ {
