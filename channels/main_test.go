@@ -35,6 +35,15 @@ func shouldNotTimeout(t *testing.T, fn func()) {
 	}
 }
 
+// to be used with defer
+func shouldPanic(t *testing.T) {
+	t.Helper()
+	r := recover()
+	if r == nil {
+		t.Fatal("test should have panicked")
+	}
+}
+
 func TestWaitingForAllUnbuffered(t *testing.T) {
 	t.Run("Waiting for all in an unbuffered channel", func(t *testing.T) {
 		WaitingForAllUnbuffered()
@@ -50,6 +59,13 @@ func TestWaitingForAllBufferedIterateChannel(t *testing.T) {
 	)
 }
 
+func TestWaitingForAllBuffered(t *testing.T) {
+	t.Run("Waiting for all buffered: loop over channel (no use of range channel)", func(t *testing.T) {
+		WaitingForAllBuffered()
+	},
+	)
+}
+
 func TestWaitAllWorkersWithoutChannel(t *testing.T) {
 	t.Run("We wait for all go routines without using any channels", func(t *testing.T) {
 		shouldNotTimeout(t, WaitingForAllWithWaitGroup)
@@ -59,5 +75,26 @@ func TestWaitAllWorkersWithoutChannel(t *testing.T) {
 func TestDeadLockUnbuffered(t *testing.T) {
 	t.Run("Deadlock Unbuffered Channel", func(t *testing.T) {
 		shouldTimeout(t, DeadlockUnbuffered)
+	})
+}
+
+func TestEmptyBufferedChannel(t *testing.T) {
+	t.Run("empty buffered channel without input", func(t *testing.T) {
+		WorkingWithEmptyChannel()
+	})
+}
+
+// TODO: fix failing
+func TestClosingTooEarly(t *testing.T) {
+	t.Run("Closing channel before finished sending", func(t *testing.T) {
+		defer shouldPanic(t)
+		ClosingTooEarly()
+	})
+}
+
+func TestSendingToClosedChannel(t *testing.T) {
+	t.Run("Closing channel before finished sending", func(t *testing.T) {
+		defer shouldPanic(t)
+		SendingToClosedChannel()
 	})
 }

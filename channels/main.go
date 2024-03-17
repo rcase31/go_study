@@ -103,31 +103,41 @@ func WaitingForAllBuffered() {
 
 // behavior: execution will not wait each go-routine to finish
 func ClosingTooEarly() {
-	done := make(chan struct{}, 2)
+	done := make(chan bool, 2)
 
 	for i := 0; i < 2; i++ {
 		go func() {
-			time.Sleep(time.Second * 3)
-			done <- struct{}{}
+			time.Sleep(time.Second)
+			done <- true
 		}()
 	}
 	close(done)
-	<-done
-	<-done
+	fmt.Println(<-done)
+	fmt.Println(<-done)
+	time.Sleep(time.Second)
 }
 
 // behavior: execution will panic because it was trying to send to a closed channel
 func SendingToClosedChannel() {
-
-	defer func() {
-		didPanic := recover()
-		if didPanic != nil {
-			fmt.Println(didPanic)
-		}
-	}()
-
 	done := make(chan bool, 2)
 	close(done)
 	done <- true
 	<-done
 }
+
+// behavior: it will print default boolean value (false)
+func WorkingWithEmptyChannel() {
+	done := make(chan bool, 2)
+
+	close(done)
+	fmt.Println(len(done))
+	fmt.Println(<-done)
+	fmt.Println(<-done)
+	fmt.Println(<-done)
+	fmt.Println(<-done)
+}
+
+//TODO: make test where I can test if a go routine still excutes after function is done
+// However, if the main function of your program exits, or if os.Exit() is called, the program will terminate, and all running goroutines will be stopped abruptly, regardless of their state. This means that if your main program's execution completes while your goroutines are still working, those goroutines will be stopped, and they won't complete their execution.
+
+//TODO: make a case where I use defer to guarantee that all is done
