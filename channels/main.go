@@ -53,10 +53,12 @@ func WaitingForAllWithWaitGroup() {
 	var wg sync.WaitGroup
 
 	for i := 0; i < NUM_WORKERS; i++ {
+		// addition of workers will occur outside the go-routine because it needs to be synchronous
 		wg.Add(1)
 		go func() {
+			// completion of the go-routine will be marked last and we use defer for it
 			defer wg.Done()
-			time.Sleep(time.Second)
+			time.Sleep(time.Millisecond)
 		}()
 	}
 	wg.Wait()
