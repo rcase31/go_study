@@ -46,7 +46,6 @@ func TestWaitingForAllUnbuffered(t *testing.T) {
 func TestWaitingForAllBufferedIterateChannel(t *testing.T) {
 	t.Run("Waiting for all buffered: iterate over channel", func(t *testing.T) {
 		WaitingForAllBufferedIterateChannel()
-		t.Log("worked")
 	},
 	)
 }

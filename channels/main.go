@@ -47,7 +47,7 @@ func WaitingForAllUnbuffered() {
 	}
 }
 
-// behavior: same as above but using the sync package
+// behavior: same as above but using the sync package instead of channel
 func WaitingForAllWithWaitGroup() {
 	const NUM_WORKERS = 10
 	var wg sync.WaitGroup
@@ -64,22 +64,7 @@ func WaitingForAllWithWaitGroup() {
 	wg.Wait()
 }
 
-// behavior: execution will wait each go-routine to finish
-func WaitingForAllBuffered() {
-
-	const NUM_WORKERS = 100
-
-	done := make(chan bool, NUM_WORKERS)
-
-	for i := 0; i < NUM_WORKERS; i++ {
-		go worker(done)
-	}
-	for i := 0; i < NUM_WORKERS; i++ {
-		<-done
-	}
-}
-
-// It will successfully deplete the channel using a for loop
+// It will successfully deplete the channel using a for loop (imperfect)
 func WaitingForAllBufferedIterateChannel() {
 
 	const NUM_WORKERS = 10
@@ -91,11 +76,28 @@ func WaitingForAllBufferedIterateChannel() {
 			worker(done)
 		}()
 	}
+	// this is not ideal, because there's no guarantee that all workers will finish after this timing. Or it is rudimentary.
 	time.Sleep(time.Second)
-
+	// I do need to close the channel before iterating over it, otherwise it will never stop looping over it.
 	close(done)
 	for a := range done {
 		fmt.Print(a)
+	}
+}
+
+// behavior: execution will wait each go-routine to finish
+func WaitingForAllBuffered() {
+
+	const NUM_WORKERS = 100
+
+	done := make(chan bool, NUM_WORKERS)
+
+	for i := 0; i < NUM_WORKERS; i++ {
+		go worker(done)
+	}
+	// note that I do not NEED to close the channel here like in WaitingForAllBufferedIterateChannel
+	for i := 0; i < NUM_WORKERS; i++ {
+		<-done
 	}
 }
 
