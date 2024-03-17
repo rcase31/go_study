@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -44,6 +45,21 @@ func WaitingForAllUnbuffered() {
 	for i := 0; i < NUM_WORKERS; i++ {
 		<-done
 	}
+}
+
+// behavior: same as above but using the sync package
+func WaitingForAllWithWaitGroup() {
+	const NUM_WORKERS = 10
+	var wg sync.WaitGroup
+
+	for i := 0; i < NUM_WORKERS; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			time.Sleep(time.Second)
+		}()
+	}
+	wg.Wait()
 }
 
 // behavior: execution will wait each go-routine to finish
