@@ -141,3 +141,7 @@ func WorkingWithEmptyChannel() {
 // However, if the main function of your program exits, or if os.Exit() is called, the program will terminate, and all running goroutines will be stopped abruptly, regardless of their state. This means that if your main program's execution completes while your goroutines are still working, those goroutines will be stopped, and they won't complete their execution.
 
 //TODO: make a case where I use defer to guarantee that all is done
+
+//TODO: use a channel as an atomic counter( using len)
+
+//TODO: make another package to test atomicity
