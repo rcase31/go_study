@@ -84,6 +84,12 @@ func TestEmptyBufferedChannel(t *testing.T) {
 	})
 }
 
+func TestEmptyBufferedChannelNotClosed(t *testing.T) {
+	t.Run("empty buffered channel without input", func(t *testing.T) {
+		WorkingWithEmptyChannelNotClosed()
+	})
+}
+
 // TODO: fix failing
 func TestClosingTooEarly(t *testing.T) {
 	t.Run("Closing channel before finished sending", func(t *testing.T) {

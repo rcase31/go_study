@@ -125,7 +125,7 @@ func SendingToClosedChannel() {
 	<-done
 }
 
-// behavior: it will print default boolean value (false)
+// behavior: it will print default boolean value (false); it won't block execution
 func WorkingWithEmptyChannel() {
 	done := make(chan bool, 2)
 
@@ -135,6 +135,26 @@ func WorkingWithEmptyChannel() {
 	fmt.Println(<-done)
 	fmt.Println(<-done)
 	fmt.Println(<-done)
+}
+
+// behavior: it will print default boolean value (false); it won't block execution
+func WorkingWithEmptyChannelNotClosed() {
+	done := make(chan bool, 2)
+
+	done <- true
+	done <- true
+
+	fmt.Println(len(done))
+
+	for i := 0; i < 4; i++ {
+		fmt.Printf("\nexecution %d:\n", i)
+		select {
+		case <-done:
+			fmt.Println("channel out")
+		case <-time.After(time.Second):
+			fmt.Println("channel is blocking")
+		}
+	}
 }
 
 //TODO: make test where I can test if a go routine still excutes after function is done
