@@ -137,7 +137,7 @@ func WorkingWithEmptyChannel() {
 	fmt.Println(<-done)
 }
 
-// behavior: it will print default boolean value (false); it won't block execution
+// behavior: it will print default boolean value (false); it will block execution
 func WorkingWithEmptyChannelNotClosed() {
 	done := make(chan bool, 2)
 
